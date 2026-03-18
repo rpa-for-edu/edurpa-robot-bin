@@ -21,6 +21,7 @@ type Credential struct {
 		ClientSecret string   `json:"client_secret"`
 		TokenURI     string   `json:"token_uri"`
 		Scopes       []string `json:"scopes"`
+		BaseURL      string   `json:"base_url"`
 	} `json:"data"`
 }
 
@@ -119,6 +120,10 @@ func callAPIAndProcessResponse() ([]Credential, error) {
 	responseBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return nil, fmt.Errorf("API request failed with status code: %d, body: %s", resp.StatusCode, string(responseBody))
 	}
 
 	// Unmarshal response JSON
